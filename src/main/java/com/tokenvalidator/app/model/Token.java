@@ -1,21 +1,13 @@
 package com.tokenvalidator.app.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
 public class Token {
-    
+    @Getter @Setter
     String value;
-
-    public Token( String value) {
-        this.value = value;
-    }
-    public Token() {
-      
-    }
-
-    public String getValue() {
-        return this.value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }
