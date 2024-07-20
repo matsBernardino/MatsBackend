@@ -1,132 +1,89 @@
-# Descrição
+# Token Validator Application
 
-Construa uma aplicação que exponha uma api web que recebe por parametros um JWT (string) e verifica se é valida conforme regras abaixo:
+## Sobre a Aplicação
 
-- Deve ser um JWT válido
-- Deve conter apenas 3 claims (Name, Role e Seed)
-- A claim Name não pode ter carácter de números
-- A claim Role deve conter apenas 1 dos três valores (Admin, Member e External)
-- A claim Seed deve ser um número primo.
-- O tamanho máximo da claim Name é de 256 caracteres.
+Esta aplicação foi desenvolvida para validar tokens JWT (JSON Web Tokens). O serviço verifica a estrutura do token e suas claims, assegurando que atendem a critérios específicos de validação.
+## Instruções
 
-#  Definição
-Input: Uma token JWT (string).  
-Output: Um boolean indicando se a valido ou não conforme regras descritas acima.
+### Pré-requisitos
 
-#  Continue a partir desse ponto...
-Foi disponibilizada uma aplicação inicial para apoiar na conclusão dessa tarefa. Você deve evoluir o código a partir da classe **TokenController**
+* Java 11 ou superior
+* Maven 3.6 ou superior
+* Git
 
-![token](/img/token.png)
+### Passos para Execução
 
-Para executar a aplicação, você pode utilizar qualquer IDE e ela está disponível executando um POST http://localhost:8080/validate
+1. **Clone o repositório:**
 
-Também foi disponibilizado uma coleção no postman com exemplos de chamadas dos casos de teste exemplificados na massa de teste descrita abaixo.
+    ```bash
+    git clone https://github.com/matsBernardino/MatsBackend.git
+    cd MatsBackend
+    ```
 
-![postman](/img/postman.png)
+2. **Compile o projeto:**
 
+    ```bash
+    mvn clean install
+    ```
 
+3. **Execute a aplicação:**
 
-# Massa de teste 
+    ```bash
+    mvn spring-boot:run
+    ```
 
-### Caso 1:
-Entrada:
-```
-eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJTZWVkIjoiNzg0MSIsIk5hbWUiOiJUb25pbmhvIEFyYXVqbyJ9.QY05sIjtrcJnP533kQNk8QXcaleJ1Q01jWY_ZzIZuAg
-```
-Saida:
-```
-verdadeiro
-```
-Justificativa:
-Abrindo o JWT, as informações contidas atendem a descrição:
-```json
-{
-  "Role": "Admin",
-  "Seed": "7841",
-  "Name": "Toninho Araujo"
-}
-```
+4. **Testar a aplicação:**
 
-### Caso 2:
-Entrada:
-```
-eyJhbGciOiJzI1NiJ9.dfsdfsfryJSr2xrIjoiQWRtaW4iLCJTZrkIjoiNzg0MSIsIk5hbrUiOiJUb25pbmhvIEFyYXVqbyJ9.QY05fsdfsIjtrcJnP533kQNk8QXcaleJ1Q01jWY_ZzIZuAg
-```
-Saida:
-```
-falso
-```
-Justificativa:
-JWT invalido
+   Para executar os testes unitários/integração, utilize:
 
-### Caso 3:
-Entrada:
-```
-eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiRXh0ZXJuYWwiLCJTZWVkIjoiODgwMzciLCJOYW1lIjoiTTRyaWEgT2xpdmlhIn0.6YD73XWZYQSSMDf6H0i3-kylz1-TY_Yt6h1cV2Ku-Qs
-```
-Saida:
-```
-falso
-```
-Justificativa:
-Abrindo o JWT, a Claim Name possui caracter de números
-```json
-{
-  "Role": "External",
-  "Seed": "72341",
-  "Name": "M4ria Olivia"
-}
-```
+    ```bash
+    mvn test
+    ```
 
-### Caso 4:
-Entrada:
-```
-eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiTWVtYmVyIiwiT3JnIjoiQlIiLCJTZWVkIjoiMTQ2MjciLCJOYW1lIjoiVmFsZGlyIEFyYW5oYSJ9.cmrXV_Flm5mfdpfNUVopY_I2zeJUy4EZ4i3Fea98zvY
-```
-Saida:
-```
-falso
-```
-Justificativa:
-Abrindo o JWT, foi encontrado mais de 3 claims.
-```json
-{
-  "Role": "Member",
-  "Org": "BR",
-  "Seed": "14627",
-  "Name": "Valdir Aranha"
-}
-```
-## Pontos que daremos maior atenção
+## Descrição dos Métodos
 
-- Testes de unidade / integração
-- Abstração, acoplamento, extensibilidade e coesão
-- Design de API
-- SOLID
-- Documentação da solução no *README* 
-- Commits realizados durante a construção
+### [`TokenService`](src/main/java/com/tokenvalidator/app/services/TokenService.java)
 
-## Pontos que não iremos avaliar
+Esta classe centraliza as funcionalidades de validação de tokens e suas claims.
 
-- docker file
-- scripts ci/cd
-- coleções do postman ou ferramentas para execução
-- expor a api em algum provedor de cloud (aws, azure...)
+#### `validaEstruturaToken(Token token)`
 
-### Sobre a documentação
+Este método verifica se o token possui a estrutura correta, composta por três partes (header, payload, signature). Além disso, valida se cada parte contém apenas caracteres permitidos.
 
-Nesta etapa do processo seletivo queremos entender as decisões por trás do código, portanto é fundamental que o *README* tenha algumas informações referentes a sua solução.
+* **Parâmetros:**
+    * [`Token`](src/main/java/com/tokenvalidator/app/model/Token.java): O token a ser validado.
+* **Exceções:**
+    * [`InvalidTokenException`](src/main/java/com/tokenvalidator/app/exceptions/InvalidTokenException.java): Lançada se o token não possui 3 partes ou contém caracteres inválidos.
 
-Algumas dicas do que esperamos ver são:
+#### `validaClaims(Token token)`
 
-- Instruções básicas de como executar o projeto;
-- Detalhes da descrição do metodo
-- Caso algo não esteja claro e você precisou assumir alguma premissa, quais foram e o que te motivou a tomar essas decisões.
+Este método extrai as claims do token e realiza várias validações:
 
-## Como esperamos receber sua solução
+* O número de claims deve ser exatamente 3.
+* A claim `Name` não deve conter caracteres numéricos.
+* O comprimento da claim `Name` não deve exceder 256 caracteres.
+* A claim `Role` deve ser um dos valores permitidos: `Admin`, `Member`, `External`.
+* A claim `Seed` deve ser um número primo.
 
-Esta etapa é eliminatória, e por isso esperamos que o código reflita essa importância.
+* **Parâmetros:**
+    * [`Token`](src/main/java/com/tokenvalidator/app/model/Token.java): O token a ser validado.
+* **Exceções:**
+    * [`InvalidClaimsException`](src/main/java/com/tokenvalidator/app/exceptions/InvalidClaimsException.java): Lançada se alguma das validações falhar.
 
-Se tiver algum imprevisto, dúvida ou problema, por favor entre em contato com a gente, estamos aqui para ajudar.
+#### `decodeToken(String token)`
 
-Nos envie o *link de um repo público* com a sua solução
+Este método decodifica o token JWT e retorna suas claims.
+
+* **Parâmetros:**
+    * `String token`: O token JWT a ser decodificado.
+* **Retorno:**
+    * `Claims`: As claims extraídas do token.
+
+### Exceções
+
+* **[InvalidTokenException](src/main/java/com/tokenvalidator/app/exceptions/InvalidTokenException.java):** Lançada quando a estrutura do token é inválida.
+* **[InvalidClaimsException](src/main/java/com/tokenvalidator/app/exceptions/InvalidClaimsException.java):** Lançada quando as claims do token são inválidas.
+
+**Tratamento de Exceções:**
+* Por razões de segurança, mensagens de erro detalhadas para falhas de autenticação são evitadas para mitigar possíveis ataques. Em vez disso, é retornada uma mensagem padrão fixa com um código de erro variável.
+* Para obter mais detalhes sobre os erros, consulte os logs da aplicação.
